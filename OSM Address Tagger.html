@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Offline Address Tagger</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input { margin: 5px; width: 200px; }
+    button { margin: 5px; padding: 5px 10px; }
+    #output { margin-top: 15px; white-space: pre; background: #f8f8f8; border: 1px solid #ccc; padding: 10px; width: 300px; }
+  </style>
+</head>
+<body>
+  <h2>Offline Address Tagger</h2>
+  <label>Starting Number: <input id="start" type="number" value="100" /></label><br>
+  <label>Increment: <input id="inc" type="number" value="2" /></label><br>
+  <label>Street: <input id="street" type="text" /></label><br>
+  <label>City: <input id="city" type="text" /></label><br>
+  <label>State: <input id="state" type="text" /></label><br>
+  <label>ZIP: <input id="zip" type="text" /></label><br>
+  <label>County: <input id="county" type="text" /></label><br>
+  <button onclick="start()">Start</button>
+  <button onclick="next()">Next</button>
+
+  <div id="output">Output will appear here</div>
+
+  <button onclick="copyOutput()">Copy</button> 
+  <span id="copyStatus" style="margin-left:10px; color:green;"></span>
+
+  <script>
+    let current = 0;
+    let increment = 1;
+    let info = {};
+
+    function start() {
+      current = parseInt(document.getElementById('start').value, 10);
+      increment = parseInt(document.getElementById('inc').value, 10);
+      info = {
+        street: document.getElementById('street').value,
+        city: document.getElementById('city').value,
+        state: document.getElementById('state').value,
+        zip: document.getElementById('zip').value,
+        county: document.getElementById('county').value,
+      };
+      generateOutput();
+    }
+
+    function next() {
+      current += increment;
+      generateOutput();
+    }
+
+    function generateOutput() {
+      const out = `
+addr:housenumber=${current}
+addr:street=${info.street}
+addr:city=${info.city}
+addr:state=${info.state}
+addr:postcode=${info.zip}
+addr:county=${info.county}
+addr:country=US
+      `.trim();
+      document.getElementById('output').innerText = out;
+    }
+
+    function copyOutput() {
+      const text = document.getElementById('output').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const status = document.getElementById('copyStatus');
+        status.textContent = 'Copied!';
+        setTimeout(() => { status.textContent = ''; }, 1500);
+      }).catch(err => {
+        console.error('Copy failed:', err);
+      });
+    }
+  </script>
+</body>
+</html>
